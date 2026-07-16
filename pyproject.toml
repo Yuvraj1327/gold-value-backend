@@ -1,3 +1,6 @@
+
+
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
@@ -8,12 +11,9 @@ filterwarnings = [
 
 [tool.ruff]
 line-length = 110
-target-version = "py313"
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "UP"]
+target-version = "py312"
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.12"
 ignore_missing_imports = true
 disallow_untyped_defs = false
