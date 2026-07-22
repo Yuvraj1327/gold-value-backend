@@ -48,6 +48,7 @@ class HistoryService:
             gst_amount=breakdown.gst_amount,
             final_value=breakdown.final_value,
             loan_amount=breakdown.loan_amount,
+            certificate_snapshot=payload.certificate_snapshot,
         )
         return await self._repository.add(instance)
 

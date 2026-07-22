@@ -47,6 +47,9 @@ class SaveCalculationRequest(CalculateRequest):
     """Input for POST /history — same fields plus metadata to persist."""
 
     ornament_name: str = Field(min_length=1, max_length=255)
+    # Serialised CertificateFormState — optional so older app versions that
+    # don't yet send it still work without validation errors.
+    certificate_snapshot: dict | None = None
 
 
 class UpdateCalculationRequest(BaseModel):
@@ -91,6 +94,7 @@ class CalculationResponse(BaseModel):
     final_value: float
     loan_amount: float
     created_at: datetime
+    certificate_snapshot: dict | None = None
 
     @field_validator("id", mode="before")
     @classmethod
