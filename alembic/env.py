@@ -51,7 +51,16 @@ def run_migrations_offline() -> None:
 
 
 def _do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
+    # transaction_per_migration=True gives each migration step its own
+    # BEGIN/COMMIT so that DDL is guaranteed to be flushed even when the
+    # underlying asyncpg connection is behind Supabase's PgBouncer pooler,
+    # which can silently swallow a single outer transaction commit.
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=True,
+        transaction_per_migration=True,
+    )
     with context.begin_transaction():
         context.run_migrations()
 
@@ -76,6 +85,10 @@ async def run_migrations_online() -> None:
             __import__("sqlalchemy").text("SET search_path TO public")
         )
         await connection.run_sync(_do_run_migrations)
+        # Explicit commit after run_sync ensures asyncpg flushes DDL even
+        # when the connection is behind a pooler that doesn't auto-commit
+        # on connection close.
+        await connection.commit()
 
     await connectable.dispose()
 
